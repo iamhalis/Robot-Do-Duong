@@ -7,61 +7,103 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
+            /* Nền gradient huyền ảo */
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             /* Con trỏ bự */
             cursor: url('cursor.png') 0 0, auto;
+            overflow: hidden;
         }
 
         h1 {
-            color: #2c3e50;
+            color: #ffffff;
             font-size: 36px;
             margin-bottom: 50px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            letter-spacing: 3px;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+            z-index: 10;
         }
 
         .menu-container {
             display: flex;
-            gap: 40px;
+            gap: 50px;
             flex-wrap: wrap;
             justify-content: center;
+            z-index: 10;
         }
 
+        /* Hiệu ứng Liquid Glass (Thủy tinh lỏng) */
         .option-box {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 320px;
-            height: 320px;
-            background-color: rgba(27, 105, 137, 0.85);
+            width: 300px;
+            height: 300px;
+            
+            /* Màu kính trong suốt */
+            background: rgba(255, 255, 255, 0.1);
+            /* Làm mờ khung cảnh phía sau (blur) */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            
+            /* Viền kính mỏng */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Đổ bóng đổ tạo khối */
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            
+            /* Bo góc */
+            border-radius: 30px;
+            
             color: white;
             font-size: 32px;
             font-weight: bold;
             text-decoration: none;
-            border-radius: 45px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
             text-align: center;
-            backdrop-filter: blur(5px);
+            line-height: 1.4;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
             /* Con trỏ bự khi chỉ vào nút */
             cursor: url('cursor.png') 0 0, pointer;
         }
 
-        .option-box:hover {
-            transform: translateY(-10px) scale(1.02);
-            background-color: rgba(27, 105, 137, 1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        /* Hiệu ứng sáng mờ bên trong kính */
+        .option-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
         }
+
+        .option-box:hover {
+            transform: translateY(-15px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Vòng tròn trang trí nền (Tùy chọn) */
+        .circle { position: absolute; border-radius: 50%; filter: blur(60px); z-index: 1; }
+        .c1 { width: 400px; height: 400px; background: #9b59b6; top: -100px; left: -100px; }
+        .c2 { width: 500px; height: 500px; background: #3498db; bottom: -150px; right: -150px; }
     </style>
 </head>
 <body>
+
+    <!-- Trang trí nền -->
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
 
     <h1>CHỌN QUY TẮC MÔ PHỎNG</h1>
     

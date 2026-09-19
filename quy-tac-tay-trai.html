@@ -158,10 +158,10 @@
 
     function getOffset(direction) {
         const offset = 7;
-        if (direction === 0) return { dx: offset, dy: 0 };
-        if (direction === 1) return { dx: 0, dy: offset };
-        if (direction === 2) return { dx: -offset, dy: 0 };
-        if (direction === 3) return { dx: 0, dy: -offset };
+        if (direction === 0) return { dx: -offset, dy: 0 }; // Đi lên -> lệch trái
+        if (direction === 1) return { dx: 0, dy: -offset }; // Đi phải -> lệch trên
+        if (direction === 2) return { dx: offset, dy: 0 };  // Đi xuống -> lệch phải
+        if (direction === 3) return { dx: 0, dy: offset };  // Đi trái -> lệch dưới
         return { dx: 0, dy: 0 };
     }
 
