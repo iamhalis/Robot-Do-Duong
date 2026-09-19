@@ -3,481 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô phỏng Robot tìm đường - 2 Cột & Highlight Thuật toán</title>
+    <title>Menu - Chọn Quy Tắc Mô Phỏng</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
             margin: 0;
-            padding: 20px;
-            color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100vh;
+            /* Con trỏ bự */
+            cursor: url('cursor.png') 0 0, auto;
         }
+
         h1 {
-            margin-top: 0;
-            margin-bottom: 20px;
             color: #2c3e50;
-            font-size: 24px;
-            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
         }
-        /* Bố cục 2 cột */
-        .main-layout {
+
+        .menu-container {
             display: flex;
-            gap: 20px;
-            max-width: 1000px;
-            width: 100%;
-            justify-content: center;
-            align-items: flex-start;
+            gap: 40px;
             flex-wrap: wrap;
+            justify-content: center;
         }
-        .panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        /* Cột trái: Mê cung */
-        .left-panel {
-            flex: 1;
-            min-width: 400px;
-        }
-        canvas {
-            border: 4px solid #2c3e50;
-            background-color: #ffffff;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-        /* Cột phải: Thuật toán */
-        .right-panel {
-            width: 360px;
-            text-align: left;
-        }
-        .right-panel h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            text-align: center;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 10px;
-        }
-        .code-box {
-            background: #1e272e;
-            color: #dcdde1;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .code-line {
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background 0.2s, color 0.2s;
-            white-space: pre-wrap;
-        }
-        /* Hiệu ứng nháy đèn (Highlight) */
-        .code-line.active {
-            background-color: #e74c3c;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 0 8px rgba(231, 76, 60, 0.8);
-        }
-        /* Bảng điều khiển */
-        .controls {
-            margin-top: 15px;
+
+        .option-box {
             display: flex;
-            gap: 8px;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-        }
-        button {
-            padding: 8px 14px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
+            width: 320px;
+            height: 320px;
+            background-color: rgba(27, 105, 137, 0.85);
             color: white;
-            border: none;
-            border-radius: 6px;
-            transition: background 0.3s, transform 0.1s;
-        }
-        button:active { transform: scale(0.97); }
-        #generateBtn { background-color: #9b59b6; }
-        #generateBtn:hover { background-color: #8e44ad; }
-        #stepBtn { background-color: #3498db; }
-        #stepBtn:hover { background-color: #2980b9; }
-        #startBtn { background-color: #2ecc71; }
-        #startBtn:hover { background-color: #27ae60; }
-        #resetBtn { background-color: #e67e22; }
-        #resetBtn:hover { background-color: #d35400; }
-        button:disabled {
-            background-color: #bdc3c7 !important;
-            cursor: not-allowed;
-            transform: none;
-        }
-        #status {
-            margin-top: 15px;
+            font-size: 32px;
             font-weight: bold;
-            font-size: 15px;
-            color: #e74c3c;
-            min-height: 24px;
+            text-decoration: none;
+            border-radius: 45px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            /* Con trỏ bự khi chỉ vào nút */
+            cursor: url('cursor.png') 0 0, pointer;
+        }
+
+        .option-box:hover {
+            transform: translateY(-10px) scale(1.02);
+            background-color: rgba(27, 105, 137, 1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
         }
     </style>
 </head>
 <body>
 
-<h1>Mô phỏng Robot tìm đường (Quy tắc tay phải)</h1>
-
-<div class="main-layout">
-    <!-- CỘT TRÁI: MÊ CUNG & ĐIỀU KHIỂN -->
-    <div class="panel left-panel">
-        <canvas id="mazeCanvas"></canvas>
-        
-        <div class="controls">
-            <button id="generateBtn" onclick="initNewMaze()">🎲 Bản đồ mới</button>
-            <button id="stepBtn" onclick="stepSimulation()">⏭️ Tiến 1 bước</button>
-            <button id="startBtn" onclick="startSimulation()">▶️ Tự động</button>
-            <button id="resetBtn" onclick="resetSimulation(true)">🔄 Đặt lại</button>
-        </div>
-        
-        <div id="status">Sẵn sàng. Hãy chọn lệnh để bắt đầu.</div>
+    <h1>CHỌN QUY TẮC MÔ PHỎNG</h1>
+    
+    <div class="menu-container">
+        <a href="quy-tac-tay-trai.html" class="option-box">QUY TẮC<br>TAY TRÁI</a>
+        <a href="quy-tac-tay-phai.html" class="option-box">QUY TẮC<br>TAY PHẢI</a>
     </div>
-
-    <!-- CỘT PHẢI: KHỐI THUẬT TOÁN (NHÁY ĐÈN) -->
-    <div class="panel right-panel">
-        <h3>Thuật toán quy tắc tay phải</h3>
-        <div class="code-box">
-            <div id="line-loop" class="code-line">Lặp lại cho đến khi tìm thấy lối ra:</div>
-            <div id="line-check-right" class="code-line">  - Nếu bên phải không có tường:</div>
-            <div id="line-turn-right" class="code-line">      + Quay phải 90°</div>
-            <div id="line-move-1" class="code-line">      + Tiến 1 bước</div>
-            <div id="line-check-front" class="code-line">  - Ngược lại, Nếu phía trước trống:</div>
-            <div id="line-move-2" class="code-line">      + Tiến 1 bước</div>
-            <div id="line-turn-left" class="code-line">  - Ngược lại (Bị chặn):</div>
-            <div id="line-else" class="code-line">      + Quay trái 90°</div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const canvas = document.getElementById('mazeCanvas');
-    const ctx = canvas.getContext('2d');
-    const statusEl = document.getElementById('status');
-    const startBtn = document.getElementById('startBtn');
-    const stepBtn = document.getElementById('stepBtn');
-    const generateBtn = document.getElementById('generateBtn');
-    
-    const CELL_SIZE = 35;
-    const cols = 13; // Kích thước gọn gàng cho 2 cột
-    const rows = 11; 
-    
-    canvas.width = cols * CELL_SIZE;
-    canvas.height = rows * CELL_SIZE;
-
-    let maze = [];
-    const dx = [0, 1, 0, -1]; // 0: Bắc, 1: Đông, 2: Nam, 3: Tây
-    const dy = [-1, 0, 1, 0];
-    
-    let robot = { x: 1, y: 1, dir: 1 };
-    let pathHistory = [];
-    let isRunning = false;
-    let isFinished = false;
-    let intervalId = null;
-
-    // Hàm đổi highlight dòng code thuật toán
-    function highlightLine(lineId) {
-        document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
-        if (lineId) {
-            const line = document.getElementById(lineId);
-            if (line) line.classList.add('active');
-        }
-    }
-
-    // Tạo mê cung ngẫu nhiên
-    function generateMaze() {
-        maze = Array(rows).fill().map(() => Array(cols).fill(1));
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function carve(x, y) {
-            maze[y][x] = 0;
-            let directions = shuffle([0, 1, 2, 3]);
-
-            for (let i = 0; i < 4; i++) {
-                let dir = directions[i];
-                let nx = x + dx[dir] * 2;
-                let ny = y + dy[dir] * 2;
-
-                if (nx > 0 && nx < cols - 1 && ny > 0 && ny < rows - 1 && maze[ny][nx] === 1) {
-                    maze[y + dy[dir]][x + dx[dir]] = 0;
-                    carve(nx, ny);
-                }
-            }
-        }
-        carve(1, 1);
-
-        let startX = Math.floor(cols / 2);
-        let startY = Math.floor(rows / 2);
-        if (startX % 2 === 0) startX++;
-        if (startY % 2 === 0) startY++;
-        maze[startY][startX] = 2; // Điểm bắt đầu
-
-        let exitPlaced = false;
-        while (!exitPlaced) {
-            let edge = Math.floor(Math.random() * 4);
-            if (edge === 0) {
-                let x = Math.floor(Math.random() * ((cols-1)/2)) * 2 + 1;
-                if (maze[1][x] === 0) { maze[0][x] = 3; exitPlaced = true; }
-            } else if (edge === 1) {
-                let y = Math.floor(Math.random() * ((rows-1)/2)) * 2 + 1;
-                if (maze[y][cols-2] === 0) { maze[y][cols-1] = 3; exitPlaced = true; }
-            } else if (edge === 2) {
-                let x = Math.floor(Math.random() * ((cols-1)/2)) * 2 + 1;
-                if (maze[rows-2][x] === 0) { maze[rows-1][x] = 3; exitPlaced = true; }
-            } else {
-                let y = Math.floor(Math.random() * ((rows-1)/2)) * 2 + 1;
-                if (maze[y][1] === 0) { maze[y][0] = 3; exitPlaced = true; }
-            }
-        }
-    }
-
-    function initNewMaze() {
-        clearInterval(intervalId);
-        generateMaze();
-        resetSimulation(false);
-        highlightLine(null);
-        statusEl.innerText = "Đã tạo mê cung mới! Sẵn sàng chạy.";
-        statusEl.style.color = "#8e44ad";
-    }
-
-    function getOffset(direction) {
-        const offset = 7;
-        if (direction === 0) return { dx: offset, dy: 0 };
-        if (direction === 1) return { dx: 0, dy: offset };
-        if (direction === 2) return { dx: -offset, dy: 0 };
-        if (direction === 3) return { dx: 0, dy: -offset };
-        return { dx: 0, dy: 0 };
-    }
-
-    function drawMaze() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                if (maze[y][x] === 1) {
-                    ctx.fillStyle = "#1e272e";
-                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                } else {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    ctx.strokeStyle = "#ecf0f1";
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                }
-                if (maze[y][x] === 3) {
-                    ctx.fillStyle = "#2ecc71";
-                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 11px Arial";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText("EXIT", x * CELL_SIZE + CELL_SIZE/2, y * CELL_SIZE + CELL_SIZE/2);
-                }
-            }
-        }
-    }
-
-    function drawPath() {
-        if (pathHistory.length === 0) return;
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(231, 76, 60, 0.8)";
-        ctx.lineWidth = 3.5;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-
-        for (let i = 0; i < pathHistory.length; i++) {
-            let p = pathHistory[i];
-            let off = getOffset(p.dir);
-            let cx = p.x * CELL_SIZE + CELL_SIZE / 2 + off.dx;
-            let cy = p.y * CELL_SIZE + CELL_SIZE / 2 + off.dy;
-            if (i === 0) ctx.moveTo(cx, cy);
-            else ctx.lineTo(cx, cy);
-        }
-        ctx.stroke();
-
-        ctx.fillStyle = "#c0392b";
-        for (let p of pathHistory) {
-            let off = getOffset(p.dir);
-            let cx = p.x * CELL_SIZE + CELL_SIZE / 2 + off.dx;
-            let cy = p.y * CELL_SIZE + CELL_SIZE / 2 + off.dy;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function drawRobot() {
-        ctx.save();
-        ctx.translate(robot.x * CELL_SIZE + CELL_SIZE/2, robot.y * CELL_SIZE + CELL_SIZE/2);
-        ctx.rotate(robot.dir * Math.PI / 2);
-
-        ctx.fillStyle = "#8e44ad";
-        ctx.fillRect(-10, -10, 20, 20);
-        
-        ctx.fillStyle = "#2c3e50";
-        ctx.fillRect(-13, -8, 3, 16);
-        ctx.fillRect(10, -8, 3, 16); 
-
-        ctx.fillStyle = "#e74c3c";
-        ctx.beginPath();
-        ctx.arc(0, -7, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "white";
-        ctx.font = "bold 8px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("GO", 0, 2);
-        ctx.restore();
-    }
-
-    function draw() {
-        drawMaze();
-        drawPath();
-        drawRobot();
-    }
-
-    // THỰC THI THUẬT TOÁN TỪNG BƯỚC KÈM HIGHLIGHT
-    function executeAlgorithmicStep() {
-        if (isFinished) return;
-
-        highlightLine('line-loop');
-
-        let rightDir = (robot.dir + 1) % 4;
-        let rx = robot.x + dx[rightDir];
-        let ry = robot.y + dy[rightDir];
-
-        // Kiểm tra bên phải
-        setTimeout(() => highlightLine('line-check-right'), 50);
-
-        setTimeout(() => {
-            if (maze[ry] && maze[ry][rx] !== 1) { 
-                highlightLine('line-turn-right');
-                robot.dir = rightDir;
-                
-                setTimeout(() => {
-                    highlightLine('line-move-1');
-                    robot.x += dx[robot.dir];
-                    robot.y += dy[robot.dir];
-                    statusEl.innerText = "Bên phải trống -> Quay phải & Tiến.";
-                    finishStepAction();
-                }, 120);
-
-            } else {
-                // Kiểm tra phía trước
-                highlightLine('line-check-front');
-                let fx = robot.x + dx[robot.dir];
-                let fy = robot.y + dy[robot.dir];
-
-                setTimeout(() => {
-                    if (maze[fy] && maze[fy][fx] !== 1) { 
-                        highlightLine('line-move-2');
-                        robot.x += dx[robot.dir];
-                        robot.y += dy[robot.dir];
-                        statusEl.innerText = "Phía trước trống -> Tiến 1 bước.";
-                        finishStepAction();
-                    } else { 
-                        highlightLine('line-else');
-                        robot.dir = (robot.dir + 3) % 4; 
-                        statusEl.innerText = "Bị chặn -> Quay trái 90°.";
-                        finishStepAction();
-                    }
-                }, 120);
-            }
-        }, 120);
-    }
-
-    function finishStepAction() {
-        pathHistory.push({ x: robot.x, y: robot.y, dir: robot.dir });
-
-        if (maze[robot.y][robot.x] === 3) {
-            isFinished = true;
-            statusEl.innerText = "🎉 Robot đã tìm thấy lối ra!";
-            statusEl.style.color = "#27ae60";
-            clearInterval(intervalId);
-            startBtn.disabled = false;
-            generateBtn.disabled = false;
-            stepBtn.disabled = true;
-            isRunning = false;
-            highlightLine(null);
-        }
-        draw();
-    }
-
-    function stepSimulation() {
-        if (isFinished) return;
-        if (isRunning) {
-            clearInterval(intervalId);
-            isRunning = false;
-            startBtn.disabled = false;
-            generateBtn.disabled = false;
-        }
-        executeAlgorithmicStep();
-    }
-
-    function startSimulation() {
-        if (isRunning || isFinished) return;
-        startBtn.disabled = true;
-        generateBtn.disabled = true;
-        stepBtn.disabled = true;
-        isRunning = true;
-        statusEl.innerText = "Robot đang chạy tự động...";
-        statusEl.style.color = "#e74c3c";
-        
-        intervalId = setInterval(executeAlgorithmicStep, 350);
-    }
-
-    function resetSimulation(updateText = true) {
-        clearInterval(intervalId);
-        for (let y = 0; y < rows; y++) {
-            for (let x = 0; x < cols; x++) {
-                if (maze[y][x] === 2) {
-                    robot.x = x;
-                    robot.y = y;
-                    for (let i = 0; i < 4; i++) {
-                        let nx = x + dx[i];
-                        let ny = y + dy[i];
-                        if (maze[ny][nx] === 0) {
-                            robot.dir = i;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        pathHistory = [{ x: robot.x, y: robot.y, dir: robot.dir }];
-        isRunning = false;
-        isFinished = false;
-        startBtn.disabled = false;
-        generateBtn.disabled = false;
-        stepBtn.disabled = false;
-        highlightLine(null);
-        
-        if(updateText) {
-            statusEl.innerText = "Đã đặt lại. Hãy bấm Tiến hoặc Tự động.";
-            statusEl.style.color = "#333";
-        }
-        draw();
-    }
-
-    initNewMaze();
-</script>
 
 </body>
 </html>
